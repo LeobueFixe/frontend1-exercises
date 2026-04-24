@@ -1,5 +1,14 @@
 let tasks = [];
 
+if (localStorage.getItem("tasks")) {
+    tasks = JSON.parse(localStorage.getItem("tasks"));
+    getTask();
+}
+
+function save() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
 function notify(text, color = "#C2A878") {
     Toastify({
         text: text,
@@ -17,7 +26,6 @@ function notify(text, color = "#C2A878") {
     }).showToast();
 }
 
-
 function Task(title, description) {
     const d = new Date();
     const yy = String(d.getFullYear()).slice(-2);
@@ -31,17 +39,18 @@ function Task(title, description) {
 }
 
 function deleteTask(id) {
-    tasks = tasks.filter(t => t.id !== id);
+    tasks = tasks.filter(task => task.id !== id);
+
     getTask();
     document.getElementById("task-view").innerHTML = "";
-    notify("Task deleted!", "#b33939"); 
-
+    notify("Task deleted!", "#b33939");
+    save();
 }
 
 function getTask() {
     const taskList = document.getElementById("task-list");
+    
     taskList.innerHTML = "";
-
     tasks.forEach(task => {
         taskList.innerHTML += `
             <div class="task" onclick="openTask('${task.id}')">
@@ -64,22 +73,33 @@ function openTask(id) {
             <p class="task-desc">${task.description}</p>
 
             <div class="task-actions">
-                <button class="crud" onclick="deleteTask('${task.id}')">Delete</button>
-                <button class="crud" onclick="editTask('${task.id}')">Edit</button>
+
+                <button class="crud delete-btn" onclick="deleteTask('${task.id}')">
+                    <svg viewBox="0 0 24 24" class="icon">
+                        <path d="M3 6h18M9 6v12m6-12v12M5 6l1 14h12l1-14" />
+                    </svg>
+                </button>
+
+                <button class="crud edit-btn" onclick="editTask('${task.id}')">
+                    <svg viewBox="0 0 24 24" class="icon">
+                        <path d="M4 20h4l10-10-4-4L4 16v4zM14 6l4 4" />
+                    </svg>
+                </button>
+
             </div>
         </div>
     `;
 }
 
 function editTask(id) {
-    const task = tasks.find(t => t.id === id);
+    const task = tasks.find(task => task.id === id);
     const view = document.getElementById("task-view");
 
     view.innerHTML = `
         <form id="edit-form" onsubmit="saveTask('${id}'); return false;">
             <div class="form-header">
                 <input id="edit-title" type="text" value="${task.title}" required>
-                <button type="submit">💾</button>
+                <button type="submit" class="save-btn"><svg class="icon" viewBox="0 0 24 24"><path d="M5 3h14v18H5zM9 3v6h6V3hee" /></svg></button>
             </div>
 
             <textarea id="edit-desc" required>${task.description}</textarea>
@@ -88,14 +108,14 @@ function editTask(id) {
 }
 
 function saveTask(id) {
-    const task = tasks.find(t => t.id === id);
-
+    const task = tasks.find(task => task.id === id);
     task.title = document.getElementById("edit-title").value;
     task.description = document.getElementById("edit-desc").value;
-    getTask();
 
+    getTask();
     openCreateForm();
     notify("Task updated!");
+    save();
 }
 
 function openCreateForm() {
@@ -105,7 +125,7 @@ function openCreateForm() {
         <form id="create-form">
             <div class="form-header">
                 <input id="title" type="text" placeholder="Title..." required>
-                <button type="submit">➕</button>
+                <button type="submit" class="save-btn"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg></button>
             </div>
 
             <textarea id="description" placeholder="Description..." required></textarea>
@@ -116,16 +136,16 @@ function openCreateForm() {
 
     createForm.addEventListener("submit", (e) => {
         e.preventDefault();
-
         const title = document.getElementById("title").value;
         const description = document.getElementById("description").value;
-
         const newTask = new Task(title, description);
+        
         tasks.push(newTask);
         notify("Task created successfully!");
-
+        save();
         getTask();
-        createForm.reset();});
+        createForm.reset();
+    });
 }
 
-document.getElementById("showForms").addEventListener("click", openCreateForm());
+document.getElementById("showForms").addEventListener("click", openCreateForm);
