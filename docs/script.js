@@ -31,11 +31,14 @@ function Task(title, description, completed) {
     const yy = String(d.getFullYear()).slice(-2);
     const mm = String(d.getMonth() + 1).padStart(2, "0");
     const dd = String(d.getDate()).padStart(2, "0");
+    const hh = String(d.getHours()).padStart(2, "0");
+    const min = String(d.getMinutes()).padStart(2, "0");
+    const ss = String(d.getSeconds()).padStart(2, "0");
 
     this.id = crypto.randomUUID();
     this.title = title;
     this.description = description;
-    this.date = `${yy}/${mm}/${dd}`;
+    this.date = `${yy}/${mm}/${dd} ${hh}:${min}:${ss}`;
     this.completed = completed || false;
 
 }
