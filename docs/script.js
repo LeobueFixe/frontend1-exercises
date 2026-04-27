@@ -26,7 +26,7 @@ function notify(text, color = "#C2A878") {
     }).showToast();
 }
 
-function Task(title, description) {
+function Task(title, description, completed) {
     const d = new Date();
     const yy = String(d.getFullYear()).slice(-2);
     const mm = String(d.getMonth() + 1).padStart(2, "0");
@@ -36,9 +36,14 @@ function Task(title, description) {
     this.title = title;
     this.description = description;
     this.date = `${yy}/${mm}/${dd}`;
+    this.completed = completed || false;
+
 }
 
 function deleteTask(id) {
+    const confirmDelete = confirm("Are you sure you want to delete this task?");
+    
+    if (!confirmDelete) return;
     tasks = tasks.filter(task => task.id !== id);
 
     getTask();
@@ -46,6 +51,7 @@ function deleteTask(id) {
     notify("Task deleted!", "#b33939");
     save();
 }
+
 
 function getTask() {
     const taskList = document.getElementById("task-list");
@@ -74,6 +80,12 @@ function openTask(id) {
 
             <div class="task-actions">
 
+                <button class="crud complete-btn ${task.completed ? "checked" : ""}" onclick="toggleComplete('${task.id}', event)">
+                    <svg viewBox="0 0 24 24" class="icon check-icon">
+                        <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                </button>
+
                 <button class="crud delete-btn" onclick="deleteTask('${task.id}')">
                     <svg viewBox="0 0 24 24" class="icon">
                         <path d="M3 6h18M9 6v12m6-12v12M5 6l1 14h12l1-14" />
@@ -90,6 +102,21 @@ function openTask(id) {
         </div>
     `;
 }
+
+function toggleComplete(id, event) {
+    event.stopPropagation(); 
+
+    const task = tasks.find(task => task.id === id);
+    task.completed = !task.completed;
+
+    save();
+    notify(task.completed ? "Task marked as done" : "Task unchecked");
+
+    openTask(id);
+    getTask();
+}
+
+
 
 function editTask(id) {
     const task = tasks.find(task => task.id === id);

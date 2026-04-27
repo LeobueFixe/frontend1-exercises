@@ -73,7 +73,7 @@ form {
 }
 
 form input {
-  width: 85%;
+  width: 100%;
   padding: 12px;
   border-radius: 8px;
   border: 1px solid var(--primary);
@@ -83,6 +83,7 @@ form input {
 }
 
 form button {
+  width: 5%;
   height: 45px;
   background: var(--accent);
   color: var(--secondary);
@@ -129,6 +130,7 @@ textarea {
   min-height: 300px;
   display: flex;
   flex-direction: column;
+  overflow-wrap: break-word;
 }
 
 .task-title {
@@ -187,7 +189,6 @@ textarea {
   border-radius: 8px;
   cursor: pointer;
   transition: 0.2s;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -203,4 +204,13 @@ textarea {
 
 .save-btn:hover .icon {
   opacity: 0.7;
+}
+
+.complete-btn .check-icon {
+  opacity: 0;          
+  transition: 0.2s;
+}
+
+.complete-btn.checked .check-icon {
+  opacity: 1;          
 }
